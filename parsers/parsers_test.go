@@ -6,9 +6,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/iden3/go-circom-prover-verifier/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/vocdoni/go-snark/types"
 )
 
 func TestParseArrayG1(t *testing.T) {

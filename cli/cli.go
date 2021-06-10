@@ -8,15 +8,15 @@ import (
 	"os"
 	"time"
 
-	"github.com/iden3/go-circom-prover-verifier/parsers"
-	"github.com/iden3/go-circom-prover-verifier/prover"
-	"github.com/iden3/go-circom-prover-verifier/verifier"
+	"github.com/vocdoni/go-snark/parsers"
+	"github.com/vocdoni/go-snark/prover"
+	"github.com/vocdoni/go-snark/verifier"
 )
 
 const version = "v0.0.1"
 
 func main() {
-	fmt.Println("go-circom-prover-verifier")
+	fmt.Println("go-snark")
 	fmt.Println("		", version)
 
 	prove := flag.Bool("prove", false, "prover mode")

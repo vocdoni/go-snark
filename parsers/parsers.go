@@ -15,7 +15,7 @@ import (
 	"strings"
 
 	bn256 "github.com/ethereum/go-ethereum/crypto/bn256/cloudflare"
-	"github.com/iden3/go-circom-prover-verifier/types"
+	"github.com/vocdoni/go-snark/types"
 )
 
 // PkString is the equivalent to the Pk struct in string representation, containing the ProvingKey
@@ -980,8 +980,8 @@ func sortedKeys(m map[int]*big.Int) []int {
 }
 
 // PkToGoBin converts the ProvingKey (*types.Pk) into binary format defined by
-// go-circom-prover-verifier.  PkGoBin is a own go-circom-prover-verifier
-// binary format that allows to go faster when parsing.
+// go-snark.  PkGoBin is a own go-snark binary format that allows to go faster
+// when parsing.
 func PkToGoBin(pk *types.Pk) ([]byte, error) {
 	var r []byte
 	o := 0
@@ -1088,10 +1088,9 @@ func PkToGoBin(pk *types.Pk) ([]byte, error) {
 	return r[:], nil
 }
 
-// ParsePkGoBin parses go-circom-prover-verifier binary file representation of
-// the ProvingKey into ProvingKey struct (*types.Pk).  PkGoBin is a own
-// go-circom-prover-verifier binary format that allows to go faster when
-// parsing.
+// ParsePkGoBin parses go-snark binary file representation of the ProvingKey
+// into ProvingKey struct (*types.Pk).  PkGoBin is a own go-snark binary format
+// that allows to go faster when parsing.
 func ParsePkGoBin(f *os.File) (*types.Pk, error) {
 	o := 0
 	var pk types.Pk

@@ -1,6 +1,9 @@
-# go-circom-prover-verifier [![GoDoc](https://godoc.org/github.com/iden3/go-circom-prover-verifier?status.svg)](https://godoc.org/github.com/iden3/go-circom-prover-verifier) [![Go Report Card](https://goreportcard.com/badge/github.com/iden3/go-circom-prover-verifier)](https://goreportcard.com/report/github.com/iden3/go-circom-prover-verifier) [![Test](https://github.com/iden3/go-circom-prover-verifier/workflows/Test/badge.svg)](https://github.com/iden3/go-circom-prover-verifier/actions?query=workflow%3ATest)
+# go-snark [![GoDoc](https://godoc.org/github.com/vocdoni/go-snark?status.svg)](https://godoc.org/github.com/vocdoni/go-snark) [![Go Report Card](https://goreportcard.com/badge/github.com/vocdoni/go-snark)](https://goreportcard.com/report/github.com/vocdoni/go-snark) [![Test](https://github.com/vocdoni/go-snark/workflows/Test/badge.svg)](https://github.com/vocdoni/go-snark/actions?query=workflow%3ATest)
 
-Go implementation of the [Groth16 protocol](https://eprint.iacr.org/2016/260.pdf) zkSNARK prover & verifier compatible with [circom](https://github.com/iden3/circom).
+Go implementation of the [Groth16 protocol](https://eprint.iacr.org/2016/260.pdf) zkSNARK prover & verifier compatible with:
+
+- [circom](https://github.com/iden3/circom)
+- [bellman](https://github.com/zkcrypto/bellman) (TODO)
 
 
 Using [bn256](https://github.com/ethereum/go-ethereum/tree/master/crypto/bn256/cloudflare) (used by [go-ethereum](https://github.com/ethereum/go-ethereum)) for the Pairing curve operations.
@@ -8,11 +11,12 @@ Using [bn256](https://github.com/ethereum/go-ethereum/tree/master/crypto/bn256/c
 ### Example
 
 - Generate Proof
+
 ```go
 import (
-  "github.com/iden3/go-circom-prover-verifier/parsers"
-  "github.com/iden3/go-circom-prover-verifier/prover"
-  "github.com/iden3/go-circom-prover-verifier/verifier"
+  "github.com/vocdoni/go-snark/parsers"
+  "github.com/vocdoni/go-snark/prover"
+  "github.com/vocdoni/go-snark/verifier"
 )
 
 [...]
@@ -38,6 +42,7 @@ fmt.Println(publicStr)
 ```
 
 - Verify Proof
+
 ```go
 // read proof & verificationKey & publicSignals
 proofJson, _ := ioutil.ReadFile("../testdata/big/proof.json")
@@ -59,11 +64,12 @@ fmt.Println(v)
 From the `cli` directory:
 
 - Show options
+
 ```
 > go run cli.go -help
-go-circom-prover-verifier
+go-snark
                  v0.0.1
-Usage of /tmp/go-build620318239/b001/exe/cli:
+Usage of go-snark:
   -proof string
         proof path (default "proof.json")
   -prove
@@ -81,10 +87,13 @@ Usage of /tmp/go-build620318239/b001/exe/cli:
 ```
 
 - Prove
+
 ```
 > go run cli.go -prove -provingkey=../testdata/circuit5k/proving_key.json -witness=../testdata/circuit5k/witness.json
 ```
+
 - Verify
+
 ```
 > go run cli.go -verify -verificationkey=../testdata/circuit5k/verification_key.json
 ```
