@@ -21,7 +21,8 @@ func main() {
 
 	prove := flag.Bool("prove", false, "prover mode")
 	verify := flag.Bool("verify", false, "verifier mode")
-	convert := flag.Bool("convert", false, "convert mode, to convert between proving_key.json to proving_key.go.bin")
+	convert := flag.Bool("convert", false, "convert mode, to convert between"+
+		" proving_key.json to proving_key.go.bin")
 
 	provingKeyPath := flag.String("pk", "proving_key.json", "provingKey path")
 	witnessPath := flag.String("witness", "witness.json", "witness path")
@@ -58,21 +59,21 @@ func cmdProve(provingKeyPath, witnessPath, proofPath, publicPath string) error {
 	fmt.Println("zkSNARK Groth16 prover")
 
 	fmt.Println("Reading proving key file:", provingKeyPath)
-	provingKeyJson, err := ioutil.ReadFile(provingKeyPath)
+	provingKeyJSON, err := ioutil.ReadFile(provingKeyPath) //nolint:gosec
 	if err != nil {
 		return err
 	}
-	pk, err := parsers.ParsePk(provingKeyJson)
+	pk, err := parsers.ParsePk(provingKeyJSON)
 	if err != nil {
 		return err
 	}
 
 	fmt.Println("Reading witness file:", witnessPath)
-	witnessJson, err := ioutil.ReadFile(witnessPath)
+	witnessJSON, err := ioutil.ReadFile(witnessPath) //nolint:gosec
 	if err != nil {
 		return err
 	}
-	w, err := parsers.ParseWitness(witnessJson)
+	w, err := parsers.ParseWitness(witnessJSON)
 	if err != nil {
 		return err
 	}
@@ -85,13 +86,13 @@ func cmdProve(provingKeyPath, witnessPath, proofPath, publicPath string) error {
 	}
 	fmt.Println("proof generation time elapsed:", time.Since(beforeT))
 
-	proofStr, err := parsers.ProofToJson(proof)
+	proofStr, err := parsers.ProofToJSON(proof)
 	if err != nil {
 		return err
 	}
 
 	// write output
-	err = ioutil.WriteFile(proofPath, proofStr, 0644)
+	err = ioutil.WriteFile(proofPath, proofStr, 0600)
 	if err != nil {
 		return err
 	}
@@ -99,7 +100,7 @@ func cmdProve(provingKeyPath, witnessPath, proofPath, publicPath string) error {
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(publicPath, publicStr, 0644)
+	err = ioutil.WriteFile(publicPath, publicStr, 0600)
 	if err != nil {
 		return err
 	}
@@ -111,28 +112,28 @@ func cmdProve(provingKeyPath, witnessPath, proofPath, publicPath string) error {
 func cmdVerify(proofPath, verificationKeyPath, publicPath string) error {
 	fmt.Println("zkSNARK Groth16 verifier")
 
-	proofJson, err := ioutil.ReadFile(proofPath)
+	proofJSON, err := ioutil.ReadFile(proofPath) //nolint:gosec
 	if err != nil {
 		return err
 	}
-	vkJson, err := ioutil.ReadFile(verificationKeyPath)
+	vkJSON, err := ioutil.ReadFile(verificationKeyPath) //nolint:gosec
 	if err != nil {
 		return err
 	}
-	publicJson, err := ioutil.ReadFile(publicPath)
+	publicJSON, err := ioutil.ReadFile(publicPath) //nolint:gosec
 	if err != nil {
 		return err
 	}
 
-	public, err := parsers.ParsePublicSignals(publicJson)
+	public, err := parsers.ParsePublicSignals(publicJSON)
 	if err != nil {
 		return err
 	}
-	proof, err := parsers.ParseProof(proofJson)
+	proof, err := parsers.ParseProof(proofJSON)
 	if err != nil {
 		return err
 	}
-	vk, err := parsers.ParseVk(vkJson)
+	vk, err := parsers.ParseVk(vkJSON)
 	if err != nil {
 		return err
 	}
@@ -143,23 +144,24 @@ func cmdVerify(proofPath, verificationKeyPath, publicPath string) error {
 }
 
 func cmdConvert(provingKeyPath, provingKeyBinPath string) error {
-	fmt.Println("Convertion tool")
+	fmt.Println("Conversion tool")
 
-	provingKeyJson, err := ioutil.ReadFile(provingKeyPath)
+	provingKeyJSON, err := ioutil.ReadFile(provingKeyPath) //nolint:gosec
 	if err != nil {
 		return err
 	}
-	pk, err := parsers.ParsePk(provingKeyJson)
+	pk, err := parsers.ParsePk(provingKeyJSON)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("Converting proving key json (%s)\nto go proving key binary (%s)\n", provingKeyPath, provingKeyBinPath)
+	fmt.Printf("Converting proving key json (%s)\nto go proving key binary (%s)\n",
+		provingKeyPath, provingKeyBinPath)
 	pkGBin, err := parsers.PkToGoBin(pk)
 	if err != nil {
 		return err
 	}
-	if err = ioutil.WriteFile(provingKeyBinPath, pkGBin, 0644); err != nil {
+	if err = ioutil.WriteFile(provingKeyBinPath, pkGBin, 0600); err != nil {
 		return err
 	}
 

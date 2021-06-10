@@ -48,20 +48,28 @@ cd ../
 echo "convert witness & pk of circuit1k to bin & go bin"
 node node_modules/wasmsnark/tools/buildwitness.js -i circuit1k/witness.json -o circuit1k/witness.bin
 node node_modules/wasmsnark/tools/buildpkey.js -i circuit1k/proving_key.json -o circuit1k/proving_key.bin
+sed -i 's/alfa/alpha/g' circuit1k/verification_key.json # after wasmsnark finished using proving_key.bin
+sed -i 's/alfa/alpha/g' circuit1k/proving_key.json # after wasmsnark finished using proving_key.bin
 go run ../cli/cli.go -convert -pk circuit1k/proving_key.json -pkbin circuit1k/proving_key.go.bin
 
 echo "convert witness & pk of circuit5k to bin & go bin"
 node node_modules/wasmsnark/tools/buildwitness.js -i circuit5k/witness.json -o circuit5k/witness.bin
 node node_modules/wasmsnark/tools/buildpkey.js -i circuit5k/proving_key.json -o circuit5k/proving_key.bin
+sed -i 's/alfa/alpha/g' circuit5k/verification_key.json # after wasmsnark finished using proving_key.bin
+sed -i 's/alfa/alpha/g' circuit5k/proving_key.json # after wasmsnark finished using proving_key.bin
 go run ../cli/cli.go -convert -pk circuit5k/proving_key.json -pkbin circuit5k/proving_key.go.bin
 
 # echo "convert witness & pk of circuit10k to bin & go bin"
 # node node_modules/wasmsnark/tools/buildwitness.js -i circuit10k/witness.json -o circuit10k/witness.bin
 # node node_modules/wasmsnark/tools/buildpkey.js -i circuit10k/proving_key.json -o circuit10k/proving_key.bin
+# sed -i 's/alfa/alpha/g' circuit10k/verification_key.json # after wasmsnark finished using proving_key.bin
+# sed -i 's/alfa/alpha/g' circuit10k/proving_key.json # after wasmsnark finished using proving_key.bin
 # go run ../cli/cli.go -convert -pk circuit10k/proving_key.json -pkbin circuit10k/proving_key.go.bin
 # 
 # echo "convert witness & pk of circuit20k to bin & go bin"
 # node node_modules/wasmsnark/tools/buildwitness.js -i circuit20k/witness.json -o circuit20k/witness.bin
 # node node_modules/wasmsnark/tools/buildpkey.js -i circuit20k/proving_key.json -o circuit20k/proving_key.bin
+# sed -i 's/alfa/alpha/g' circuit20k/verification_key.json # after wasmsnark finished using proving_key.bin
+# sed -i 's/alfa/alpha/g' circuit20k/proving_key.json # after wasmsnark finished using proving_key.bin
 # go run ../cli/cli.go -convert -pk circuit20k/proving_key.json -pkbin circuit20k/proving_key.go.bin
 

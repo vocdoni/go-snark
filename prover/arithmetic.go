@@ -61,6 +61,7 @@ func fDiv(a, b *big.Int) *big.Int {
 	return new(big.Int).Mod(ab, types.R)
 }
 
+//nolint:unused,deadcode // TODO check
 func fNeg(a *big.Int) *big.Int {
 	return new(big.Int).Mod(new(big.Int).Neg(a), types.R)
 }

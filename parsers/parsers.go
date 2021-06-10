@@ -26,7 +26,7 @@ type PkString struct {
 	C          [][]string          `json:"C"`
 	NVars      int                 `json:"nVars"`
 	NPublic    int                 `json:"nPublic"`
-	VkAlpha1   []string            `json:"vk_alfa_1"`
+	VkAlpha1   []string            `json:"vk_alpha_1"`
 	VkDelta1   []string            `json:"vk_delta_1"`
 	VkBeta1    []string            `json:"vk_beta_1"`
 	VkBeta2    [][]string          `json:"vk_beta_2"`
@@ -50,7 +50,7 @@ type ProofString struct {
 
 // VkString is the Verification Key data structure in string format (from json)
 type VkString struct {
-	Alpha []string   `json:"vk_alfa_1"`
+	Alpha []string   `json:"vk_alpha_1"`
 	Beta  [][]string `json:"vk_beta_2"`
 	Gamma [][]string `json:"vk_gamma_2"`
 	Delta [][]string `json:"vk_delta_2"`
@@ -58,9 +58,9 @@ type VkString struct {
 }
 
 // ParseWitness parses the json []byte data into the Witness struct
-func ParseWitness(wJson []byte) (types.Witness, error) {
+func ParseWitness(wJSON []byte) (types.Witness, error) {
 	var ws WitnessString
-	err := json.Unmarshal(wJson, &ws)
+	err := json.Unmarshal(wJSON, &ws)
 	if err != nil {
 		return nil, err
 	}
@@ -77,9 +77,9 @@ func ParseWitness(wJson []byte) (types.Witness, error) {
 }
 
 // ParsePk parses the json []byte data into the Pk struct
-func ParsePk(pkJson []byte) (*types.Pk, error) {
+func ParsePk(pkJSON []byte) (*types.Pk, error) {
 	var pkStr PkString
-	err := json.Unmarshal(pkJson, &pkStr)
+	err := json.Unmarshal(pkJSON, &pkStr)
 	if err != nil {
 		return nil, err
 	}
@@ -280,6 +280,7 @@ func ArrayBigIntToString(bi []*big.Int) []string {
 	return s
 }
 
+//nolint:unused,deadcode // TODO check
 func arrayStringToBigInt(s []string) ([]*big.Int, error) {
 	var o []*big.Int
 	for i := 0; i < len(s); i++ {
@@ -306,7 +307,7 @@ func stringToBigInt(s string) (*big.Int, error) {
 }
 
 func addPadding32(b []byte) []byte {
-	if len(b) != 32 {
+	if len(b) != 32 { //nolint:gomnd
 		b = addZPadding(b)
 	}
 	return b
@@ -329,11 +330,10 @@ func stringToBytes(s string) ([]byte, error) {
 		return nil, fmt.Errorf("error parsing bigint stringToBytes")
 	}
 	b := bi.Bytes()
-	if len(b) != 32 {
+	if len(b) != 32 { //nolint:gomnd
 		b = addZPadding(b)
 	}
 	return b, nil
-
 }
 
 func arrayStringToG1(h [][]string) ([]*bn256.G1, error) {
@@ -360,9 +360,10 @@ func arrayStringToG2(h [][][]string) ([]*bn256.G2, error) {
 	return o, nil
 }
 
+//nolint:gomnd
 func stringToG1(h []string) (*bn256.G1, error) {
 	if len(h) <= 2 {
-		return nil, fmt.Errorf("not enought data for stringToG1")
+		return nil, fmt.Errorf("not enough data for stringToG1")
 	}
 	h = h[:2]
 	hexa := false
@@ -419,8 +420,8 @@ func stringToG1(h []string) (*bn256.G1, error) {
 }
 
 func stringToG2(h [][]string) (*bn256.G2, error) {
-	if len(h) <= 2 {
-		return nil, fmt.Errorf("not enought data for stringToG2")
+	if len(h) <= 2 { //nolint:gomnd
+		return nil, fmt.Errorf("not enough data for stringToG2")
 	}
 	h = h[:2]
 	hexa := false
@@ -471,7 +472,8 @@ func stringToG2(h [][]string) (*bn256.G2, error) {
 	return p, err
 }
 
-// ProofStringToSmartContractFormat converts the ProofString to a ProofString in the SmartContract format in a ProofString structure
+// ProofStringToSmartContractFormat converts the ProofString to a ProofString in
+// the SmartContract format in a ProofString structure
 func ProofStringToSmartContractFormat(s ProofString) ProofString {
 	var rs ProofString
 	rs.A = make([]string, 2)
@@ -492,7 +494,8 @@ func ProofStringToSmartContractFormat(s ProofString) ProofString {
 	return rs
 }
 
-// ProofToSmartContractFormat converts the *types.Proof to a ProofString in the SmartContract format in a ProofString structure
+// ProofToSmartContractFormat converts the *types.Proof to a ProofString in the
+// SmartContract format in a ProofString structure
 func ProofToSmartContractFormat(p *types.Proof) ProofString {
 	s := ProofToString(p)
 	return ProofStringToSmartContractFormat(s)
@@ -531,8 +534,8 @@ func ProofToString(p *types.Proof) ProofString {
 	return ps
 }
 
-// ProofToJson outputs the Proof i Json format
-func ProofToJson(p *types.Proof) ([]byte, error) {
+// ProofToJSON outputs the Proof i JSON format
+func ProofToJSON(p *types.Proof) ([]byte, error) {
 	ps := ProofToString(p)
 	return json.Marshal(ps)
 }
@@ -570,8 +573,8 @@ func ProofToHex(p *types.Proof) ProofString {
 	return ps
 }
 
-// ProofToJsonHex outputs the Proof i Json format with hexadecimal strings
-func ProofToJsonHex(p *types.Proof) ([]byte, error) {
+// ProofToJSONHex outputs the Proof i JSON format with hexadecimal strings
+func ProofToJSONHex(p *types.Proof) ([]byte, error) {
 	ps := ProofToHex(p)
 	return json.Marshal(ps)
 }
@@ -588,7 +591,7 @@ func ParseWitnessBin(f *os.File) (types.Witness, error) {
 		} else if err != nil {
 			return nil, err
 		}
-		if n != 32 {
+		if n != 32 { //nolint:gomnd
 			return nil, fmt.Errorf("error on value format, expected 32 bytes, got %v", n)
 		}
 		w = append(w, new(big.Int).SetBytes(swapEndianness(b[0:32])))
@@ -613,7 +616,9 @@ func readNBytes(r io.Reader, n int) ([]byte, error) {
 	return b, nil
 }
 
-// ParsePkBin parses binary file representation of the ProvingKey into the ProvingKey struct
+// ParsePkBin parses binary file representation of the ProvingKey into the
+// ProvingKey struct
+//nolint:gocyclo // TODO WIP
 func ParsePkBin(f *os.File) (*types.Pk, error) {
 	o := 0
 	var pk types.Pk
@@ -850,6 +855,7 @@ func ParsePkBin(f *os.File) (*types.Pk, error) {
 	return &pk, nil
 }
 
+//nolint:gomnd
 func fromMont1Q(m []byte) []byte {
 	a := new(big.Int).SetBytes(swapEndianness(m[:32]))
 	b := new(big.Int).SetBytes(swapEndianness(m[32:64]))
@@ -879,6 +885,7 @@ func fromMont1Q(m []byte) []byte {
 	return p
 }
 
+//nolint:gomnd
 func fromMont2Q(m []byte) []byte {
 	a := new(big.Int).SetBytes(swapEndianness(m[:32]))
 	b := new(big.Int).SetBytes(swapEndianness(m[32:64]))
@@ -937,6 +944,7 @@ func fromMont1R(m []byte) []byte {
 	return x.Bytes()
 }
 
+//nolint:unused,deadcode // TODO check
 func fromMont2R(m []byte) []byte {
 	a := new(big.Int).SetBytes(swapEndianness(m[:32]))
 	b := new(big.Int).SetBytes(swapEndianness(m[32:64]))
@@ -972,7 +980,7 @@ func coordFromMont(u, q *big.Int) *big.Int {
 
 func sortedKeys(m map[int]*big.Int) []int {
 	keys := make([]int, 0, len(m))
-	for k, _ := range m {
+	for k := range m {
 		keys = append(keys, k)
 	}
 	sort.Ints(keys)
@@ -982,6 +990,7 @@ func sortedKeys(m map[int]*big.Int) []int {
 // PkToGoBin converts the ProvingKey (*types.Pk) into binary format defined by
 // go-snark.  PkGoBin is a own go-snark binary format that allows to go faster
 // when parsing.
+// nolint:gomnd
 func PkToGoBin(pk *types.Pk) ([]byte, error) {
 	var r []byte
 	o := 0
@@ -1091,6 +1100,7 @@ func PkToGoBin(pk *types.Pk) ([]byte, error) {
 // ParsePkGoBin parses go-snark binary file representation of the ProvingKey
 // into ProvingKey struct (*types.Pk).  PkGoBin is a own go-snark binary format
 // that allows to go faster when parsing.
+//nolint:gocyclo // TODO WIP
 func ParsePkGoBin(f *os.File) (*types.Pk, error) {
 	o := 0
 	var pk types.Pk

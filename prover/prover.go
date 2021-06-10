@@ -10,12 +10,11 @@ import (
 	bn256 "github.com/ethereum/go-ethereum/crypto/bn256/cloudflare"
 	"github.com/iden3/go-iden3-crypto/utils"
 	"github.com/vocdoni/go-snark/types"
-	//"fmt"
 )
 
 // Group Size
 const (
-	GSIZE = 6
+	gSize = 6
 )
 
 func randBigInt() (*big.Int, error) {
@@ -51,7 +50,7 @@ func GenerateProof(pk *types.Pk, w types.Witness) (*types.Proof, []*big.Int, err
 	proofB := arrayOfZeroesG2(numcpu)
 	proofC := arrayOfZeroesG1(numcpu)
 	proofBG1 := arrayOfZeroesG1(numcpu)
-	gsize := GSIZE
+	gsize := gSize
 	var wg1 sync.WaitGroup
 	wg1.Add(numcpu)
 	for _cpu, _ranges := range ranges(pk.NVars, numcpu) {
@@ -144,7 +143,7 @@ func calculateH(pk *types.Pk, w types.Witness) []*big.Int {
 	numcpu := runtime.NumCPU()
 
 	var wg1 sync.WaitGroup
-	wg1.Add(2)
+	wg1.Add(2) //nolint:gomnd
 	go func() {
 		for i := 0; i < pk.NVars; i++ {
 			for j := range pk.PolsA[i] {
@@ -188,7 +187,7 @@ func calculateH(pk *types.Pk, w types.Witness) []*big.Int {
 	polATodd := fft(polASe)
 	polBTodd := fft(polBSe)
 
-	polABT := arrayOfZeroesE(len(polASe) * 2)
+	polABT := arrayOfZeroesE(len(polASe) * 2) //nolint:gomnd
 	var wg3 sync.WaitGroup
 	wg3.Add(numcpu)
 	for _cpu, _ranges := range ranges(len(polASe), numcpu) {

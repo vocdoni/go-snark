@@ -11,6 +11,7 @@ type tableG1 struct {
 	data []*bn256.G1
 }
 
+//nolint:unused // TODO check
 func (t tableG1) getData() []*bn256.G1 {
 	return t.data
 }
@@ -55,7 +56,7 @@ func (t *tableG1) newTableG1(a []*bn256.G1, gsize int, toaffine bool) {
 	if toaffine {
 		for i := 0; i < len(table); i++ {
 			info := table[i].Marshal()
-			table[i].Unmarshal(info)
+			table[i].Unmarshal(info) //nolint:errcheck,gosec // TODO WIP
 		}
 	}
 	t.data = table
@@ -229,6 +230,7 @@ type tableG2 struct {
 	data []*bn256.G2
 }
 
+//nolint:unused // TODO check
 func (t tableG2) getData() []*bn256.G2 {
 	return t.data
 }
@@ -274,7 +276,7 @@ func (t *tableG2) newTableG2(a []*bn256.G2, gsize int, toaffine bool) {
 	if toaffine {
 		for i := 0; i < len(table); i++ {
 			info := table[i].Marshal()
-			table[i].Unmarshal(info)
+			table[i].Unmarshal(info) //nolint:errcheck,gosec // TODO WIP
 		}
 	}
 	t.data = table

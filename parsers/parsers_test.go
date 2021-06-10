@@ -37,10 +37,14 @@ func TestParseArrayG1(t *testing.T) {
 
 	a, err := arrayStringToG1(aS)
 	assert.Nil(t, err)
-	assert.Equal(t, "bn256.G1(23b243c928ce40c4cc2dad366e9f61723aef65866e1c66f42a08697f2f030462, 09cdd7500688fb487ec9f27b5a732d68fa0f3ddca5c2c790e330fdfb03b77c0f)", a[0].String())
-	assert.Equal(t, "bn256.G1(1779ce2c586b5fc523e72e755d969a63473052aaad7c11eb5bf0ecdcfdfefb8b, 04133c1c74206dace57cd3d76ce59be381bbf08f51a5b3edc2b0c183d43eed63)", a[1].String())
-	assert.Equal(t, "bn256.G1(02ac4120598d2f2bb81bc09b8df596403360577b0c5ff52485d1ef2200f23f0a, 01b80d298de75f867d6484c55c3da02c042bb4eb9a1734d3386786aaa669af85)", a[2].String())
-	assert.Equal(t, "bn256.G1(0000000000000000000000000000000000000000000000000000000000000000, 0000000000000000000000000000000000000000000000000000000000000001)", a[3].String())
+	assert.Equal(t, "bn256.G1(23b243c928ce40c4cc2dad366e9f61723aef65866e1c66f42a08697f2f030462,"+
+		" 09cdd7500688fb487ec9f27b5a732d68fa0f3ddca5c2c790e330fdfb03b77c0f)", a[0].String())
+	assert.Equal(t, "bn256.G1(1779ce2c586b5fc523e72e755d969a63473052aaad7c11eb5bf0ecdcfdfefb8b,"+
+		" 04133c1c74206dace57cd3d76ce59be381bbf08f51a5b3edc2b0c183d43eed63)", a[1].String())
+	assert.Equal(t, "bn256.G1(02ac4120598d2f2bb81bc09b8df596403360577b0c5ff52485d1ef2200f23f0a,"+
+		" 01b80d298de75f867d6484c55c3da02c042bb4eb9a1734d3386786aaa669af85)", a[2].String())
+	assert.Equal(t, "bn256.G1(0000000000000000000000000000000000000000000000000000000000000000,"+
+		" 0000000000000000000000000000000000000000000000000000000000000001)", a[3].String())
 }
 
 func TestParseG2(t *testing.T) {
@@ -61,7 +65,10 @@ func TestParseG2(t *testing.T) {
 
 	a, err := stringToG2(aS)
 	assert.Nil(t, err)
-	assert.Equal(t, "bn256.G2((1922d70c934543aa655ec3277f7fa10a25ec973a4f001a7c54ce4954b4916f8c, 14865e836947c42cf35b47d30e06535fff9dab319c4296e28afde368960671d5), (2f50fbe77925b0a9d718c9ab38638bafa7c65f43f0d09035e518df97ad294847, 177dfa1a3b8627faf0425d9511bcb4c6ca986ea05e3803b5c643c35b94a7e6fe))", a.String())
+	assert.Equal(t, "bn256.G2((1922d70c934543aa655ec3277f7fa10a25ec973a4f001a7c54ce4954b4916f8c,"+
+		" 14865e836947c42cf35b47d30e06535fff9dab319c4296e28afde368960671d5),"+
+		" (2f50fbe77925b0a9d718c9ab38638bafa7c65f43f0d09035e518df97ad294847,"+
+		" 177dfa1a3b8627faf0425d9511bcb4c6ca986ea05e3803b5c643c35b94a7e6fe))", a.String())
 
 	aS = [][]string{
 		{
@@ -79,7 +86,10 @@ func TestParseG2(t *testing.T) {
 	}
 	a, err = stringToG2(aS)
 	assert.Nil(t, err)
-	assert.Equal(t, "bn256.G2((1c875fed67fff3b35f115b03706ec45f281b5f6cc71a99107240e09fce4910e2, 1ee47d566e9a099626b9860bcd96f6d4a1ed65f115d3efa8e05e5f42cc793048), (26851d022ce9961df65a430811824aaf3118710ac03b0614a50c05ee27d8e408, 00d19fdce25b0d78fb317a5f1789823b7ed76274b0d1be9c685792c73b347729))", a.String())
+	assert.Equal(t, "bn256.G2((1c875fed67fff3b35f115b03706ec45f281b5f6cc71a99107240e09fce4910e2,"+
+		" 1ee47d566e9a099626b9860bcd96f6d4a1ed65f115d3efa8e05e5f42cc793048),"+
+		" (26851d022ce9961df65a430811824aaf3118710ac03b0614a50c05ee27d8e408,"+
+		" 00d19fdce25b0d78fb317a5f1789823b7ed76274b0d1be9c685792c73b347729))", a.String())
 }
 
 func TestParseArrayG2(t *testing.T) {
@@ -144,21 +154,28 @@ func TestParseArrayG2(t *testing.T) {
 
 	a, err := arrayStringToG2(aS)
 	assert.Nil(t, err)
-	assert.Equal(t, "bn256.G2((0000000000000000000000000000000000000000000000000000000000000000, 0000000000000000000000000000000000000000000000000000000000000000), (0000000000000000000000000000000000000000000000000000000000000000, 0000000000000000000000000000000000000000000000000000000000000001))", a[0].String())
-	assert.Equal(t, "bn256.G2((1922d70c934543aa655ec3277f7fa10a25ec973a4f001a7c54ce4954b4916f8c, 14865e836947c42cf35b47d30e06535fff9dab319c4296e28afde368960671d5), (2f50fbe77925b0a9d718c9ab38638bafa7c65f43f0d09035e518df97ad294847, 177dfa1a3b8627faf0425d9511bcb4c6ca986ea05e3803b5c643c35b94a7e6fe))", a[3].String())
-
+	assert.Equal(t, "bn256.G2((0000000000000000000000000000000000000000000000000000000000000000,"+
+		" 0000000000000000000000000000000000000000000000000000000000000000),"+
+		" (0000000000000000000000000000000000000000000000000000000000000000,"+
+		" 0000000000000000000000000000000000000000000000000000000000000001))",
+		a[0].String())
+	assert.Equal(t, "bn256.G2((1922d70c934543aa655ec3277f7fa10a25ec973a4f001a7c54ce4954b4916f8c,"+
+		" 14865e836947c42cf35b47d30e06535fff9dab319c4296e28afde368960671d5),"+
+		" (2f50fbe77925b0a9d718c9ab38638bafa7c65f43f0d09035e518df97ad294847,"+
+		" 177dfa1a3b8627faf0425d9511bcb4c6ca986ea05e3803b5c643c35b94a7e6fe))",
+		a[3].String())
 }
 
 func testCircuitParseWitnessBin(t *testing.T, circuit string) {
-	witnessBinFile, err := os.Open("../testdata/" + circuit + "/witness.bin")
+	witnessBinFile, err := os.Open("../testdata/" + circuit + "/witness.bin") //nolint:gosec
 	require.Nil(t, err)
-	defer witnessBinFile.Close()
+	defer witnessBinFile.Close() //nolint:errcheck,gosec
 	witness, err := ParseWitnessBin(witnessBinFile)
 	require.Nil(t, err)
 
-	witnessJson, err := ioutil.ReadFile("../testdata/" + circuit + "/witness.json")
+	witnessJSON, err := ioutil.ReadFile("../testdata/" + circuit + "/witness.json") //nolint:gosec
 	require.Nil(t, err)
-	w, err := ParseWitness(witnessJson)
+	w, err := ParseWitness(witnessJSON)
 	require.Nil(t, err)
 
 	assert.Equal(t, len(w), len(witness))
@@ -176,9 +193,9 @@ func TestParseWitnessBin(t *testing.T) {
 }
 
 func TestProofSmartContractFormat(t *testing.T) {
-	proofJson, err := ioutil.ReadFile("../testdata/circuit1k/proof.json")
+	proofJSON, err := ioutil.ReadFile("../testdata/circuit1k/proof.json")
 	require.Nil(t, err)
-	proof, err := ParseProof(proofJson)
+	proof, err := ParseProof(proofJSON)
 	require.Nil(t, err)
 	pS := ProofToString(proof)
 
@@ -199,9 +216,9 @@ func TestProofSmartContractFormat(t *testing.T) {
 }
 
 func TestProofJSON(t *testing.T) {
-	proofJson, err := ioutil.ReadFile("../testdata/circuit1k/proof.json")
+	proofJSON, err := ioutil.ReadFile("../testdata/circuit1k/proof.json")
 	require.Nil(t, err)
-	proof, err := ParseProof(proofJson)
+	proof, err := ParseProof(proofJSON)
 	require.Nil(t, err)
 
 	proof1JSON, err := json.Marshal(proof)
@@ -213,15 +230,15 @@ func TestProofJSON(t *testing.T) {
 }
 
 func testCircuitParsePkBin(t *testing.T, circuit string) {
-	pkBinFile, err := os.Open("../testdata/" + circuit + "/proving_key.bin")
+	pkBinFile, err := os.Open("../testdata/" + circuit + "/proving_key.bin") //nolint:gosec
 	require.Nil(t, err)
-	defer pkBinFile.Close()
+	defer pkBinFile.Close() //nolint:errcheck,gosec
 	pk, err := ParsePkBin(pkBinFile)
 	require.Nil(t, err)
 
-	pkJson, err := ioutil.ReadFile("../testdata/" + circuit + "/proving_key.json")
+	pkJSON, err := ioutil.ReadFile("../testdata/" + circuit + "/proving_key.json") //nolint:gosec
 	require.Nil(t, err)
-	pkJ, err := ParsePk(pkJson)
+	pkJ, err := ParsePk(pkJSON)
 	require.Nil(t, err)
 
 	assert.Equal(t, pkJ.NVars, pk.NVars)
@@ -250,20 +267,20 @@ func TestParsePkBin(t *testing.T) {
 }
 
 func testGoCircomPkFormat(t *testing.T, circuit string) {
-	pkJson, err := ioutil.ReadFile("../testdata/" + circuit + "/proving_key.json")
+	pkJSON, err := ioutil.ReadFile("../testdata/" + circuit + "/proving_key.json") //nolint:gosec
 	require.Nil(t, err)
-	pk, err := ParsePk(pkJson)
+	pk, err := ParsePk(pkJSON)
 	require.Nil(t, err)
 
 	pkGBin, err := PkToGoBin(pk)
 	require.Nil(t, err)
-	err = ioutil.WriteFile("../testdata/"+circuit+"/proving_key.go.bin", pkGBin, 0644)
+	err = ioutil.WriteFile("../testdata/"+circuit+"/proving_key.go.bin", pkGBin, 0600) //nolint:gosec
 	assert.Nil(t, err)
 
 	// parse ProvingKeyGo
-	pkGoBinFile, err := os.Open("../testdata/" + circuit + "/proving_key.go.bin")
+	pkGoBinFile, err := os.Open("../testdata/" + circuit + "/proving_key.go.bin") //nolint:gosec
 	require.Nil(t, err)
-	defer pkGoBinFile.Close()
+	defer pkGoBinFile.Close() //nolint:errcheck,gosec
 	pkG, err := ParsePkGoBin(pkGoBinFile)
 	require.Nil(t, err)
 	assert.Equal(t, pk.VkAlpha1, pkG.VkAlpha1)
@@ -292,33 +309,33 @@ func TestGoCircomPkFormat(t *testing.T) {
 }
 
 func benchmarkParsePk(b *testing.B, circuit string) {
-	pkJson, err := ioutil.ReadFile("../testdata/" + circuit + "/proving_key.json")
+	pkJSON, err := ioutil.ReadFile("../testdata/" + circuit + "/proving_key.json") //nolint:gosec
 	require.Nil(b, err)
 
-	pkBinFile, err := os.Open("../testdata/" + circuit + "/proving_key.bin")
+	pkBinFile, err := os.Open("../testdata/" + circuit + "/proving_key.bin") //nolint:gosec
 	require.Nil(b, err)
-	defer pkBinFile.Close()
+	defer pkBinFile.Close() //nolint:errcheck,gosec
 
-	pkGoBinFile, err := os.Open("../testdata/" + circuit + "/proving_key.go.bin")
+	pkGoBinFile, err := os.Open("../testdata/" + circuit + "/proving_key.go.bin") //nolint:gosec
 	require.Nil(b, err)
-	defer pkGoBinFile.Close()
+	defer pkGoBinFile.Close() //nolint:errcheck,gosec
 
-	b.Run("ParsePkJson "+circuit, func(b *testing.B) {
+	b.Run("ParsePkJSON "+circuit, func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			_, err = ParsePk(pkJson)
+			_, err = ParsePk(pkJSON)
 			require.Nil(b, err)
 		}
 	})
 	b.Run("ParsePkBin "+circuit, func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			pkBinFile.Seek(0, 0)
+			pkBinFile.Seek(0, 0) //nolint:errcheck,gosec
 			_, err = ParsePkBin(pkBinFile)
 			require.Nil(b, err)
 		}
 	})
 	b.Run("ParsePkGoBin "+circuit, func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			pkGoBinFile.Seek(0, 0)
+			pkGoBinFile.Seek(0, 0) //nolint:errcheck,gosec
 			_, err = ParsePkGoBin(pkGoBinFile)
 			require.Nil(b, err)
 		}

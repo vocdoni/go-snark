@@ -8,10 +8,13 @@ import (
 	bn256 "github.com/ethereum/go-ethereum/crypto/bn256/cloudflare"
 )
 
-var Q, _ = new(big.Int).SetString("21888242871839275222246405745257275088696311157297823662689037894645226208583", 10)
+// Q is the order of the integer field (Zq) that fits inside the snark
+var Q, _ = new(big.Int).SetString(
+	"21888242871839275222246405745257275088696311157297823662689037894645226208583", 10)
 
 // R is the mod of the finite field
-var R, _ = new(big.Int).SetString("21888242871839275222246405745257275088548364400416034343698204186575808495617", 10)
+var R, _ = new(big.Int).SetString(
+	"21888242871839275222246405745257275088548364400416034343698204186575808495617", 10)
 
 // Proof is the data structure of the Groth16 zkSNARK proof
 type Proof struct {
@@ -26,6 +29,7 @@ type proofAux struct {
 	C string `json:"pi_c"`
 }
 
+// MarshalJSON implements the JSON marshaler for Proof type
 func (p Proof) MarshalJSON() ([]byte, error) {
 	var pa proofAux
 	pa.A = hex.EncodeToString(p.A.Marshal())
@@ -34,6 +38,7 @@ func (p Proof) MarshalJSON() ([]byte, error) {
 	return json.Marshal(pa)
 }
 
+// UnmarshalJSON implements the JSON unmarshaler for Proof type
 func (p *Proof) UnmarshalJSON(data []byte) error {
 	var pa proofAux
 	if err := json.Unmarshal(data, &pa); err != nil {

@@ -23,7 +23,7 @@ func newRootsT() rootsT {
 		rem = new(big.Int).Rsh(rem, 1)
 	}
 	roots.w = make([]*ff.Element, s+1)
-	roots.w[s] = ff.NewElement().SetBigInt(fExp(big.NewInt(5), rem))
+	roots.w[s] = ff.NewElement().SetBigInt(fExp(big.NewInt(5), rem)) //nolint:gomnd
 
 	n := s - 1
 	for n >= 0 {
@@ -32,7 +32,7 @@ func newRootsT() rootsT {
 	}
 	roots.roots = make([][]*ff.Element, 50) // TODO WIP
 
-	roots.setRoots(15)
+	roots.setRoots(15) //nolint:gomnd // TODO WIP
 	return roots
 }
 
@@ -53,7 +53,7 @@ func fftroots(roots rootsT, pall []*ff.Element, bits, offset, step int) []*ff.El
 	n := 1 << bits
 	if n == 1 {
 		return []*ff.Element{pall[offset]}
-	} else if n == 2 {
+	} else if n == 2 { //nolint:gomnd
 		return []*ff.Element{
 			ff.NewElement().Add(pall[offset], pall[offset+step]), // TODO tmp
 			ff.NewElement().Sub(pall[offset], pall[offset+step]),
@@ -61,8 +61,8 @@ func fftroots(roots rootsT, pall []*ff.Element, bits, offset, step int) []*ff.El
 	}
 
 	ndiv2 := n >> 1
-	p1 := fftroots(roots, pall, bits-1, offset, step*2)
-	p2 := fftroots(roots, pall, bits-1, offset+step, step*2)
+	p1 := fftroots(roots, pall, bits-1, offset, step*2)      //nolint:gomnd
+	p2 := fftroots(roots, pall, bits-1, offset+step, step*2) //nolint:gomnd
 
 	out := make([]*ff.Element, n)
 	for i := 0; i < ndiv2; i++ {

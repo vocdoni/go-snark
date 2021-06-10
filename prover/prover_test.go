@@ -23,13 +23,13 @@ func TestCircuitsGenerateProof(t *testing.T) {
 
 func testCircuitGenerateProof(t *testing.T, circuit string) {
 	// Using json provingKey file:
-	// provingKeyJson, err := ioutil.ReadFile("../testdata/" + circuit + "/proving_key.json")
+	// provingKeyJSON, err := ioutil.ReadFile("../testdata/" + circuit + "/proving_key.json")
 	// require.Nil(t, err)
-	// pk, err := parsers.ParsePk(provingKeyJson)
+	// pk, err := parsers.ParsePk(provingKeyJSON)
 	// require.Nil(t, err)
-	// witnessJson, err := ioutil.ReadFile("../testdata/" + circuit + "/witness.json")
+	// witnessJSON, err := ioutil.ReadFile("../testdata/" + circuit + "/witness.json")
 	// require.Nil(t, err)
-	// w, err := parsers.ParseWitness(witnessJson)
+	// w, err := parsers.ParseWitness(witnessJSON)
 	// require.Nil(t, err)
 
 	// Using bin provingKey file:
@@ -40,15 +40,15 @@ func testCircuitGenerateProof(t *testing.T, circuit string) {
 	// require.Nil(t, err)
 
 	// Using go bin provingKey file:
-	pkGoBinFile, err := os.Open("../testdata/" + circuit + "/proving_key.go.bin")
+	pkGoBinFile, err := os.Open("../testdata/" + circuit + "/proving_key.go.bin") //nolint:gosec
 	require.Nil(t, err)
-	defer pkGoBinFile.Close()
+	defer pkGoBinFile.Close() //nolint:errcheck, gosec
 	pk, err := parsers.ParsePkGoBin(pkGoBinFile)
 	require.Nil(t, err)
 
-	witnessBinFile, err := os.Open("../testdata/" + circuit + "/witness.bin")
+	witnessBinFile, err := os.Open("../testdata/" + circuit + "/witness.bin") //nolint:gosec
 	require.Nil(t, err)
-	defer witnessBinFile.Close()
+	defer witnessBinFile.Close() //nolint:errcheck,gosec
 	w, err := parsers.ParseWitnessBin(witnessBinFile)
 	require.Nil(t, err)
 
@@ -57,42 +57,43 @@ func testCircuitGenerateProof(t *testing.T, circuit string) {
 	assert.Nil(t, err)
 	fmt.Println("proof generation time for "+circuit+" elapsed:", time.Since(beforeT))
 
-	proofStr, err := parsers.ProofToJson(proof)
+	proofStr, err := parsers.ProofToJSON(proof)
 	assert.Nil(t, err)
 
-	err = ioutil.WriteFile("../testdata/"+circuit+"/proof.json", proofStr, 0644)
+	err = ioutil.WriteFile("../testdata/"+circuit+"/proof.json", proofStr, 0600)
 	assert.Nil(t, err)
 	publicStr, err := json.Marshal(parsers.ArrayBigIntToString(pubSignals))
 	assert.Nil(t, err)
-	err = ioutil.WriteFile("../testdata/"+circuit+"/public.json", publicStr, 0644)
+	err = ioutil.WriteFile("../testdata/"+circuit+"/public.json", publicStr, 0600)
 	assert.Nil(t, err)
 
 	// verify the proof
-	vkJson, err := ioutil.ReadFile("../testdata/" + circuit + "/verification_key.json")
+	vkJSON, err := ioutil.ReadFile("../testdata/" + circuit + "/verification_key.json") //nolint:gosec
 	require.Nil(t, err)
-	vk, err := parsers.ParseVk(vkJson)
+	vk, err := parsers.ParseVk(vkJSON)
 	require.Nil(t, err)
 
 	v := verifier.Verify(vk, proof, pubSignals)
 	assert.True(t, v)
 
 	// to verify the proof with snarkjs:
+	//nolint:lll
 	// snarkjs verify --vk testdata/circuitX/verification_key.json -p testdata/circuitX/proof.json --pub testdata/circuitX/public.json
 }
 
 func BenchmarkGenerateProof(b *testing.B) {
 	// benchmark with a circuit of 10000 constraints
-	provingKeyJson, err := ioutil.ReadFile("../testdata/circuit5k/proving_key.json")
+	provingKeyJSON, err := ioutil.ReadFile("../testdata/circuit5k/proving_key.json")
 	require.Nil(b, err)
-	pk, err := parsers.ParsePk(provingKeyJson)
+	pk, err := parsers.ParsePk(provingKeyJSON)
 	require.Nil(b, err)
 
-	witnessJson, err := ioutil.ReadFile("../testdata/circuit5k/witness.json")
+	witnessJSON, err := ioutil.ReadFile("../testdata/circuit5k/witness.json")
 	require.Nil(b, err)
-	w, err := parsers.ParseWitness(witnessJson)
+	w, err := parsers.ParseWitness(witnessJSON)
 	require.Nil(b, err)
 
 	for i := 0; i < b.N; i++ {
-		GenerateProof(pk, w)
+		GenerateProof(pk, w) //nolint:errcheck,gosec
 	}
 }

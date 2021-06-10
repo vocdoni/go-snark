@@ -4,10 +4,9 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/vocdoni/go-snark/parsers"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/vocdoni/go-snark/parsers"
 )
 
 func TestVerify(t *testing.T) {
@@ -18,18 +17,18 @@ func TestVerify(t *testing.T) {
 }
 
 func testVerifyCircuit(t *testing.T, circuit string) {
-	proofJson, err := ioutil.ReadFile("../testdata/" + circuit + "/proof.json")
+	proofJSON, err := ioutil.ReadFile("../testdata/" + circuit + "/proof.json") //nolint:gosec
 	require.Nil(t, err)
-	vkJson, err := ioutil.ReadFile("../testdata/" + circuit + "/verification_key.json")
+	vkJSON, err := ioutil.ReadFile("../testdata/" + circuit + "/verification_key.json") //nolint:gosec
 	require.Nil(t, err)
-	publicJson, err := ioutil.ReadFile("../testdata/" + circuit + "/public.json")
+	publicJSON, err := ioutil.ReadFile("../testdata/" + circuit + "/public.json") //nolint:gosec
 	require.Nil(t, err)
 
-	public, err := parsers.ParsePublicSignals(publicJson)
+	public, err := parsers.ParsePublicSignals(publicJSON)
 	require.Nil(t, err)
-	proof, err := parsers.ParseProof(proofJson)
+	proof, err := parsers.ParseProof(proofJSON)
 	require.Nil(t, err)
-	vk, err := parsers.ParseVk(vkJson)
+	vk, err := parsers.ParseVk(vkJSON)
 	require.Nil(t, err)
 
 	v := Verify(vk, proof, public)
@@ -42,18 +41,18 @@ func testVerifyCircuit(t *testing.T, circuit string) {
 
 func BenchmarkVerify(b *testing.B) {
 	// benchmark with circuit2 (10000 constraints)
-	proofJson, err := ioutil.ReadFile("../testdata/circuit2/proof.json")
+	proofJSON, err := ioutil.ReadFile("../testdata/circuit2/proof.json")
 	require.Nil(b, err)
-	vkJson, err := ioutil.ReadFile("../testdata/circuit2/verification_key.json")
+	vkJSON, err := ioutil.ReadFile("../testdata/circuit2/verification_key.json")
 	require.Nil(b, err)
-	publicJson, err := ioutil.ReadFile("../testdata/circuit2/public.json")
+	publicJSON, err := ioutil.ReadFile("../testdata/circuit2/public.json")
 	require.Nil(b, err)
 
-	public, err := parsers.ParsePublicSignals(publicJson)
+	public, err := parsers.ParsePublicSignals(publicJSON)
 	require.Nil(b, err)
-	proof, err := parsers.ParseProof(proofJson)
+	proof, err := parsers.ParseProof(proofJSON)
 	require.Nil(b, err)
-	vk, err := parsers.ParseVk(vkJson)
+	vk, err := parsers.ParseVk(vkJSON)
 	require.Nil(b, err)
 
 	for i := 0; i < b.N; i++ {

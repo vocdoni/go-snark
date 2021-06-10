@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	N1 = 5000
-	N2 = 5000
+	n1 = 5000
+	n2 = 5000
 )
 
 func randomBigIntArray(n int) []*big.Int {
@@ -45,7 +45,7 @@ func randomG2Array(n int) []*bn256.G2 {
 }
 
 func TestTableG1(t *testing.T) {
-	n := N1
+	n := n1
 
 	// init scalar
 	var arrayW = randomBigIntArray(n)
@@ -86,25 +86,26 @@ func TestTableG1(t *testing.T) {
 
 		beforeT = time.Now()
 		Q5 := scalarMultNoDoubleG1(arrayG1, arrayW, nil, gsize)
-		fmt.Printf("Gsize : %d, TMultNoDouble time elapsed (inc table comp): %s\n", gsize, time.Since(beforeT))
+		fmt.Printf("Gsize : %d, TMultNoDouble time elapsed (inc table comp): %s\n",
+			gsize, time.Since(beforeT))
 
-		if bytes.Compare(Q1.Marshal(), Q2.Marshal()) != 0 {
+		if !bytes.Equal(Q1.Marshal(), Q2.Marshal()) {
 			t.Error("Error in TMult")
 		}
-		if bytes.Compare(Q1.Marshal(), Q3.Marshal()) != 0 {
+		if !bytes.Equal(Q1.Marshal(), Q3.Marshal()) {
 			t.Error("Error in  TMult with table comp")
 		}
-		if bytes.Compare(Q1.Marshal(), Q4.Marshal()) != 0 {
+		if !bytes.Equal(Q1.Marshal(), Q4.Marshal()) {
 			t.Error("Error in  TMultNoDouble")
 		}
-		if bytes.Compare(Q1.Marshal(), Q5.Marshal()) != 0 {
+		if !bytes.Equal(Q1.Marshal(), Q5.Marshal()) {
 			t.Error("Error in  TMultNoDoublee with table comp")
 		}
 	}
 }
 
 func TestTableG2(t *testing.T) {
-	n := N2
+	n := n2
 
 	// init scalar
 	var arrayW = randomBigIntArray(n)
@@ -145,18 +146,19 @@ func TestTableG2(t *testing.T) {
 
 		beforeT = time.Now()
 		Q5 := scalarMultNoDoubleG2(arrayG2, arrayW, nil, gsize)
-		fmt.Printf("Gsize : %d, TMultNoDouble time elapsed (inc table comp): %s\n", gsize, time.Since(beforeT))
+		fmt.Printf("Gsize : %d, TMultNoDouble time elapsed (inc table comp): %s\n",
+			gsize, time.Since(beforeT))
 
-		if bytes.Compare(Q1.Marshal(), Q2.Marshal()) != 0 {
+		if !bytes.Equal(Q1.Marshal(), Q2.Marshal()) {
 			t.Error("Error in TMult")
 		}
-		if bytes.Compare(Q1.Marshal(), Q3.Marshal()) != 0 {
+		if !bytes.Equal(Q1.Marshal(), Q3.Marshal()) {
 			t.Error("Error in  TMult with table comp")
 		}
-		if bytes.Compare(Q1.Marshal(), Q4.Marshal()) != 0 {
+		if !bytes.Equal(Q1.Marshal(), Q4.Marshal()) {
 			t.Error("Error in  TMultNoDouble")
 		}
-		if bytes.Compare(Q1.Marshal(), Q5.Marshal()) != 0 {
+		if !bytes.Equal(Q1.Marshal(), Q5.Marshal()) {
 			t.Error("Error in  TMultNoDoublee with table comp")
 		}
 	}
