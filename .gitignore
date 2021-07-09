@@ -5,5 +5,8 @@ testdata/*/*.sym
 testdata/*/*.r1cs
 testdata/*/*.sol
 testdata/*/*.bin
+testdata/*/*.wtns
+testdata/*/*.zkey
 !testdata/*/inputs.json
+testdata/*.ptau
 cli/*.json

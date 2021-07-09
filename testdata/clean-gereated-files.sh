@@ -8,3 +8,5 @@ rm */*.sym
 rm */*.r1cs
 rm */*.sol
 rm */*.bin
+rm */*.wtns
+rm *.ptau
