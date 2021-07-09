@@ -153,7 +153,7 @@ func pkStringToPk(ps PkString) (*types.Pk, error) {
 	return &p, nil
 }
 
-func proofStringToProof(pr ProofString) (*types.Proof, error) {
+func ProofStringToProof(pr ProofString) (*types.Proof, error) {
 	var p types.Proof
 	var err error
 	p.A, err = stringToG1(pr.A)
@@ -181,7 +181,7 @@ func ParseProof(pj []byte) (*types.Proof, error) {
 	if err != nil {
 		return nil, err
 	}
-	p, err := proofStringToProof(pr)
+	p, err := ProofStringToProof(pr)
 	return p, err
 }
 
@@ -194,6 +194,18 @@ func ParsePublicSignals(pj []byte) ([]*big.Int, error) {
 	}
 	var public []*big.Int
 	for _, s := range pr {
+		sb, err := stringToBigInt(s)
+		if err != nil {
+			return nil, err
+		}
+		public = append(public, sb)
+	}
+	return public, nil
+}
+
+func PublicSignalsStringToPublicSignals(ps []string) ([]*big.Int, error) {
+	var public []*big.Int
+	for _, s := range ps {
 		sb, err := stringToBigInt(s)
 		if err != nil {
 			return nil, err
@@ -583,9 +595,50 @@ func ProofToJSONHex(p *types.Proof) ([]byte, error) {
 func ParseWitnessBin(f *os.File) (types.Witness, error) {
 	var w types.Witness
 	r := bufio.NewReader(f)
-	for {
+
+	nSections, err := readHeaderBinFile(r)
+	if err != nil {
+		return w, err
+	}
+	fmt.Println("nSections", nSections)
+	// for i := 0; i < nSections; i++ {
+	l, err := readHeaderBinSection(r)
+	if err != nil {
+		return w, err
+	}
+	// }
+	fmt.Println("l", l)
+	b := make([]byte, l)
+	if _, err := r.Read(b); err != nil {
+		return w, err
+	}
+	n8 := int(binary.LittleEndian.Uint32(b[:4]))
+	fmt.Println("n8", n8)
+	if n8 != 32 {
+		return w, fmt.Errorf("n8=%d, n8!=32 not supported yet", n8)
+	}
+	q := new(big.Int).SetBytes(swapEndianness(b[4:36]))
+	fmt.Println("q", q)
+	nWitness := int(binary.LittleEndian.Uint32(b[36:40]))
+	fmt.Println("nWitness", nWitness)
+
+	l, err = readHeaderBinSection(r)
+	if err != nil {
+		return w, err
+	}
+	fmt.Println("l:", l, ", nWitness*n8:", nWitness*n8)
+
+	pos := 0
+	// for {
+	for i := 0; i < nWitness; i++ {
+		// fmt.Println(pos, l)
+		if pos >= l {
+			return w, nil
+
+		}
 		b := make([]byte, 32)
-		n, err := r.Read(b)
+		// n, err := r.Read(b) !! NO!
+		n, err := io.ReadFull(r, b)
 		if err == io.EOF {
 			return w, nil
 		} else if err != nil {
@@ -594,8 +647,10 @@ func ParseWitnessBin(f *os.File) (types.Witness, error) {
 		if n != 32 { //nolint:gomnd
 			return nil, fmt.Errorf("error on value format, expected 32 bytes, got %v", n)
 		}
-		w = append(w, new(big.Int).SetBytes(swapEndianness(b[0:32])))
+		pos += n
+		w = append(w, new(big.Int).SetBytes(swapEndianness(b[0:n])))
 	}
+	return w, nil
 }
 
 // swapEndianness swaps the order of the bytes in the slice.
@@ -620,6 +675,33 @@ func readNBytes(r io.Reader, n int) ([]byte, error) {
 // ProvingKey struct
 //nolint:gocyclo // TODO WIP
 func ParsePkBin(f *os.File) (*types.Pk, error) {
+	// zkey format
+	// ======
+	// Header(1)
+	//      Prover Type 1 Groth
+	// HeaderGroth(2)
+	//      n8q
+	//      q
+	//      n8r
+	//      r
+	//      NVars
+	//      NPub
+	//      DomainSize  (multiple of 2
+	//      alpha1
+	//      beta1
+	//      delta1
+	//      beta2
+	//      gamma2
+	//      delta2
+	// IC(3)
+	// Coefs(4)
+	// PointsA(5)
+	// PointsB1(6)
+	// PointsB2(7)
+	// PointsC(8)
+	// PointsH(9)
+	// Contributions(10)
+
 	o := 0
 	var pk types.Pk
 	r := bufio.NewReader(f)
