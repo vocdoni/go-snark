@@ -14,8 +14,9 @@ import (
 	"strconv"
 	"strings"
 
-	bn256 "github.com/ethereum/go-ethereum/crypto/bn256/cloudflare"
 	"github.com/vocdoni/go-snark/types"
+
+	bn256 "github.com/ethereum/go-ethereum/crypto/bn256/cloudflare"
 )
 
 // PkString is the equivalent to the Pk struct in string representation, containing the ProvingKey
@@ -35,45 +36,6 @@ type PkString struct {
 	DomainSize int                 `json:"domainSize"`
 	PolsA      []map[string]string `json:"polsA"`
 	PolsB      []map[string]string `json:"polsB"`
-}
-
-// WitnessString contains the Witness in string representation
-type WitnessString []string
-
-// ProofString is the equivalent to the Proof struct in string representation
-type ProofString struct {
-	A        []string   `json:"pi_a"`
-	B        [][]string `json:"pi_b"`
-	C        []string   `json:"pi_c"`
-	Protocol string     `json:"protocol"`
-}
-
-// VkString is the Verification Key data structure in string format (from json)
-type VkString struct {
-	Alpha []string   `json:"vk_alpha_1"`
-	Beta  [][]string `json:"vk_beta_2"`
-	Gamma [][]string `json:"vk_gamma_2"`
-	Delta [][]string `json:"vk_delta_2"`
-	IC    [][]string `json:"IC"`
-}
-
-// ParseWitness parses the json []byte data into the Witness struct
-func ParseWitness(wJSON []byte) (types.Witness, error) {
-	var ws WitnessString
-	err := json.Unmarshal(wJSON, &ws)
-	if err != nil {
-		return nil, err
-	}
-
-	var w types.Witness
-	for i := 0; i < len(ws); i++ {
-		bi, err := stringToBigInt(ws[i])
-		if err != nil {
-			return nil, err
-		}
-		w = append(w, bi)
-	}
-	return w, nil
 }
 
 // ParsePk parses the json []byte data into the Pk struct
@@ -151,6 +113,127 @@ func pkStringToPk(ps PkString) (*types.Pk, error) {
 	}
 
 	return &p, nil
+}
+
+func PkToString(goSnarkProvingKey *types.Pk) (*PkString, error) {
+	pkString := &PkString{
+		NVars:      goSnarkProvingKey.NVars,
+		NPublic:    goSnarkProvingKey.NPublic,
+		DomainSize: goSnarkProvingKey.DomainSize,
+	}
+
+	// Convert G1 and G2 points
+	pkString.A = make([][]string, len(goSnarkProvingKey.A))
+	for i, g1Point := range goSnarkProvingKey.A {
+		pkString.A[i] = g1ToString(g1Point)
+	}
+
+	pkString.B1 = make([][]string, len(goSnarkProvingKey.B1))
+	for i, g1Point := range goSnarkProvingKey.B1 {
+		pkString.B1[i] = g1ToString(g1Point)
+	}
+
+	pkString.B2 = make([][][]string, len(goSnarkProvingKey.B2))
+	for i, g2Point := range goSnarkProvingKey.B2 {
+		pkString.B2[i] = g2ToString(g2Point)
+	}
+
+	pkString.C = make([][]string, len(goSnarkProvingKey.C))
+	for i, g1Point := range goSnarkProvingKey.C {
+		pkString.C[i] = g1ToString(g1Point)
+	}
+
+	// Convert alpha, beta, and delta
+	pkString.VkAlpha1 = g1ToString(goSnarkProvingKey.VkAlpha1)
+	pkString.VkBeta1 = g1ToString(goSnarkProvingKey.VkBeta1)
+	pkString.VkBeta2 = g2ToString(goSnarkProvingKey.VkBeta2)
+	pkString.VkDelta1 = g1ToString(goSnarkProvingKey.VkDelta1)
+	pkString.VkDelta2 = g2ToString(goSnarkProvingKey.VkDelta2)
+
+	// Convert HExps
+	pkString.HExps = make([][]string, len(goSnarkProvingKey.HExps))
+	for i, g1Point := range goSnarkProvingKey.HExps {
+		pkString.HExps[i] = g1ToString(g1Point)
+	}
+
+	// Convert PolsA and PolsB
+	pkString.PolsA = make([]map[string]string, len(goSnarkProvingKey.PolsA))
+	for i, pol := range goSnarkProvingKey.PolsA {
+		pkString.PolsA[i] = polToMapString(pol)
+	}
+
+	pkString.PolsB = make([]map[string]string, len(goSnarkProvingKey.PolsB))
+	for i, pol := range goSnarkProvingKey.PolsB {
+		pkString.PolsB[i] = polToMapString(pol)
+	}
+
+	return pkString, nil
+}
+
+// g1ToString converts a G1 point to a string slice.
+func g1ToString(g1 *bn256.G1) []string {
+	bytes := g1.Marshal()
+	x := new(big.Int).SetBytes(bytes[:32])
+	y := new(big.Int).SetBytes(bytes[32:])
+	return []string{x.String(), y.String()}
+}
+
+// g2ToString converts a G2 point to a string slice slice.
+func g2ToString(g2 *bn256.G2) [][]string {
+	bytes := g2.Marshal()
+	x1 := new(big.Int).SetBytes(bytes[:32])
+	x2 := new(big.Int).SetBytes(bytes[32:64])
+	y1 := new(big.Int).SetBytes(bytes[64:96])
+	y2 := new(big.Int).SetBytes(bytes[96:])
+	return [][]string{{x1.String(), x2.String()}, {y1.String(), y2.String()}}
+}
+
+// polToMapString converts a map[int]*big.Int to a map[string]string.
+func polToMapString(pol map[int]*big.Int) map[string]string {
+	polString := make(map[string]string)
+	for k, v := range pol {
+		polString[fmt.Sprintf("%d", k)] = v.String()
+	}
+	return polString
+}
+
+// WitnessString contains the Witness in string representation
+type WitnessString []string
+
+// ProofString is the equivalent to the Proof struct in string representation
+type ProofString struct {
+	A        []string   `json:"pi_a"`
+	B        [][]string `json:"pi_b"`
+	C        []string   `json:"pi_c"`
+	Protocol string     `json:"protocol"`
+}
+
+// VkString is the Verification Key data structure in string format (from json)
+type VkString struct {
+	Alpha []string   `json:"vk_alpha_1"`
+	Beta  [][]string `json:"vk_beta_2"`
+	Gamma [][]string `json:"vk_gamma_2"`
+	Delta [][]string `json:"vk_delta_2"`
+	IC    [][]string `json:"IC"`
+}
+
+// ParseWitness parses the json []byte data into the Witness struct
+func ParseWitness(wJSON []byte) (types.Witness, error) {
+	var ws WitnessString
+	err := json.Unmarshal(wJSON, &ws)
+	if err != nil {
+		return nil, err
+	}
+
+	var w types.Witness
+	for i := 0; i < len(ws); i++ {
+		bi, err := stringToBigInt(ws[i])
+		if err != nil {
+			return nil, err
+		}
+		w = append(w, bi)
+	}
+	return w, nil
 }
 
 func proofStringToProof(pr ProofString) (*types.Proof, error) {
@@ -618,6 +701,7 @@ func readNBytes(r io.Reader, n int) ([]byte, error) {
 
 // ParsePkBin parses binary file representation of the ProvingKey into the
 // ProvingKey struct
+//
 //nolint:gocyclo // TODO WIP
 func ParsePkBin(f *os.File) (*types.Pk, error) {
 	o := 0
@@ -1100,6 +1184,7 @@ func PkToGoBin(pk *types.Pk) ([]byte, error) {
 // ParsePkGoBin parses go-snark binary file representation of the ProvingKey
 // into ProvingKey struct (*types.Pk).  PkGoBin is a own go-snark binary format
 // that allows to go faster when parsing.
+//
 //nolint:gocyclo // TODO WIP
 func ParsePkGoBin(f *os.File) (*types.Pk, error) {
 	o := 0

@@ -2,9 +2,9 @@ package prover
 
 import (
 	"crypto/rand"
+	"fmt"
 	"math"
 	"math/big"
-	"runtime"
 	"sync"
 
 	bn256 "github.com/ethereum/go-ethereum/crypto/bn256/cloudflare"
@@ -44,7 +44,7 @@ func GenerateProof(pk *types.Pk, w types.Witness) (*types.Proof, []*big.Int, err
 	}
 
 	// BEGIN PAR
-	numcpu := runtime.NumCPU()
+	numcpu := 1
 
 	proofA := arrayOfZeroesG1(numcpu)
 	proofB := arrayOfZeroesG2(numcpu)
@@ -55,7 +55,8 @@ func GenerateProof(pk *types.Pk, w types.Witness) (*types.Proof, []*big.Int, err
 	wg1.Add(numcpu)
 	for _cpu, _ranges := range ranges(pk.NVars, numcpu) {
 		// split 1
-		go func(cpu int, ranges [2]int) {
+		func(cpu int, ranges [2]int) {
+			fmt.Printf("cpu %d, ranges %v\n", cpu, ranges)
 			proofA[cpu] = scalarMultNoDoubleG1(pk.A[ranges[0]:ranges[1]],
 				w[ranges[0]:ranges[1]],
 				proofA[cpu],
@@ -110,7 +111,7 @@ func GenerateProof(pk *types.Pk, w types.Witness) (*types.Proof, []*big.Int, err
 	wg2.Add(numcpu)
 	for _cpu, _ranges := range ranges(len(h), numcpu) {
 		// split 2
-		go func(cpu int, ranges [2]int) {
+		func(cpu int, ranges [2]int) {
 			proofC[cpu] = scalarMultNoDoubleG1(pk.HExps[ranges[0]:ranges[1]],
 				h[ranges[0]:ranges[1]],
 				proofC[cpu],
@@ -140,11 +141,11 @@ func calculateH(pk *types.Pk, w types.Witness) []*big.Int {
 	polAT := arrayOfZeroes(m)
 	polBT := arrayOfZeroes(m)
 
-	numcpu := runtime.NumCPU()
+	numcpu := 1
 
 	var wg1 sync.WaitGroup
 	wg1.Add(2) //nolint:gomnd
-	go func() {
+	func() {
 		for i := 0; i < pk.NVars; i++ {
 			for j := range pk.PolsA[i] {
 				polAT[j] = fAdd(polAT[j], fMul(w[i], pk.PolsA[i][j]))
@@ -152,7 +153,7 @@ func calculateH(pk *types.Pk, w types.Witness) []*big.Int {
 		}
 		wg1.Done()
 	}()
-	go func() {
+	func() {
 		for i := 0; i < pk.NVars; i++ {
 			for j := range pk.PolsB[i] {
 				polBT[j] = fAdd(polBT[j], fMul(w[i], pk.PolsB[i][j]))
@@ -174,7 +175,7 @@ func calculateH(pk *types.Pk, w types.Witness) []*big.Int {
 	var wg2 sync.WaitGroup
 	wg2.Add(numcpu)
 	for _cpu, _ranges := range ranges(len(polASe), numcpu) {
-		go func(cpu int, ranges [2]int) {
+		func(cpu int, ranges [2]int) {
 			for i := ranges[0]; i < ranges[1]; i++ {
 				polASe[i].Mul(polASe[i], roots.roots[r][i])
 				polBSe[i].Mul(polBSe[i], roots.roots[r][i])
@@ -191,7 +192,7 @@ func calculateH(pk *types.Pk, w types.Witness) []*big.Int {
 	var wg3 sync.WaitGroup
 	wg3.Add(numcpu)
 	for _cpu, _ranges := range ranges(len(polASe), numcpu) {
-		go func(cpu int, ranges [2]int) {
+		func(cpu int, ranges [2]int) {
 			for i := ranges[0]; i < ranges[1]; i++ {
 				polABT[2*i].Mul(polATe[i], polBTe[i])
 				polABT[2*i+1].Mul(polATodd[i], polBTodd[i])
