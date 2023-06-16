@@ -14,9 +14,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/vocdoni/go-snark/types"
+	curve "github.com/consensys/gnark-crypto/ecc/bn254"
 
-	bn256 "github.com/ethereum/go-ethereum/crypto/bn256/cloudflare"
+	"github.com/vocdoni/go-snark/types"
 )
 
 // PkString is the equivalent to the Pk struct in string representation, containing the ProvingKey
@@ -171,7 +171,7 @@ func PkToString(goSnarkProvingKey *types.Pk) (*PkString, error) {
 }
 
 // g1ToString converts a G1 point to a string slice.
-func g1ToString(g1 *bn256.G1) []string {
+func g1ToString(g1 *curve.G1Affine) []string {
 	bytes := g1.Marshal()
 	x := new(big.Int).SetBytes(bytes[:32])
 	y := new(big.Int).SetBytes(bytes[32:])
@@ -179,7 +179,7 @@ func g1ToString(g1 *bn256.G1) []string {
 }
 
 // g2ToString converts a G2 point to a string slice slice.
-func g2ToString(g2 *bn256.G2) [][]string {
+func g2ToString(g2 *curve.G2Affine) [][]string {
 	bytes := g2.Marshal()
 	x1 := new(big.Int).SetBytes(bytes[:32])
 	x2 := new(big.Int).SetBytes(bytes[32:64])
@@ -419,8 +419,8 @@ func stringToBytes(s string) ([]byte, error) {
 	return b, nil
 }
 
-func arrayStringToG1(h [][]string) ([]*bn256.G1, error) {
-	var o []*bn256.G1
+func arrayStringToG1(h [][]string) ([]*curve.G1Affine, error) {
+	var o []*curve.G1Affine
 	for i := 0; i < len(h); i++ {
 		hi, err := stringToG1(h[i])
 		if err != nil {
@@ -431,8 +431,8 @@ func arrayStringToG1(h [][]string) ([]*bn256.G1, error) {
 	return o, nil
 }
 
-func arrayStringToG2(h [][][]string) ([]*bn256.G2, error) {
-	var o []*bn256.G2
+func arrayStringToG2(h [][][]string) ([]*curve.G2Affine, error) {
+	var o []*curve.G2Affine
 	for i := 0; i < len(h); i++ {
 		hi, err := stringToG2(h[i])
 		if err != nil {
@@ -444,7 +444,7 @@ func arrayStringToG2(h [][][]string) ([]*bn256.G2, error) {
 }
 
 //nolint:gomnd
-func stringToG1(h []string) (*bn256.G1, error) {
+func stringToG1(h []string) (*curve.G1Affine, error) {
 	if len(h) <= 2 {
 		return nil, fmt.Errorf("not enough data for stringToG1")
 	}
@@ -496,13 +496,13 @@ func stringToG1(h []string) (*bn256.G1, error) {
 		b = append(b, b0...)
 		b = append(b, b1...)
 	}
-	p := new(bn256.G1)
-	_, err = p.Unmarshal(b)
+	p := new(curve.G1Affine)
+	err = p.Unmarshal(b)
 
 	return p, err
 }
 
-func stringToG2(h [][]string) (*bn256.G2, error) {
+func stringToG2(h [][]string) (*curve.G2Affine, error) {
 	if len(h) <= 2 { //nolint:gomnd
 		return nil, fmt.Errorf("not enough data for stringToG2")
 	}
@@ -550,8 +550,8 @@ func stringToG2(h [][]string) (*bn256.G2, error) {
 		b = append(b, bH...)
 	}
 
-	p := new(bn256.G2)
-	_, err = p.Unmarshal(b)
+	p := new(curve.G2Affine)
+	err = p.Unmarshal(b)
 	return p, err
 }
 
@@ -740,8 +740,8 @@ func ParsePkBin(f *os.File) (*types.Pk, error) {
 	if err != nil {
 		return nil, err
 	}
-	pk.VkAlpha1 = new(bn256.G1)
-	_, err = pk.VkAlpha1.Unmarshal(fromMont1Q(b))
+	pk.VkAlpha1 = new(curve.G1Affine)
+	err = pk.VkAlpha1.Unmarshal(fromMont1Q(b))
 	if err != nil {
 		return nil, err
 	}
@@ -750,8 +750,8 @@ func ParsePkBin(f *os.File) (*types.Pk, error) {
 	if err != nil {
 		return nil, err
 	}
-	pk.VkBeta1 = new(bn256.G1)
-	_, err = pk.VkBeta1.Unmarshal(fromMont1Q(b))
+	pk.VkBeta1 = new(curve.G1Affine)
+	err = pk.VkBeta1.Unmarshal(fromMont1Q(b))
 	if err != nil {
 		return nil, err
 	}
@@ -760,8 +760,8 @@ func ParsePkBin(f *os.File) (*types.Pk, error) {
 	if err != nil {
 		return nil, err
 	}
-	pk.VkDelta1 = new(bn256.G1)
-	_, err = pk.VkDelta1.Unmarshal(fromMont1Q(b))
+	pk.VkDelta1 = new(curve.G1Affine)
+	err = pk.VkDelta1.Unmarshal(fromMont1Q(b))
 	if err != nil {
 		return nil, err
 	}
@@ -769,8 +769,8 @@ func ParsePkBin(f *os.File) (*types.Pk, error) {
 	if err != nil {
 		return nil, err
 	}
-	pk.VkBeta2 = new(bn256.G2)
-	_, err = pk.VkBeta2.Unmarshal(fromMont2Q(b))
+	pk.VkBeta2 = new(curve.G2Affine)
+	err = pk.VkBeta2.Unmarshal(fromMont2Q(b))
 	if err != nil {
 		return nil, err
 	}
@@ -778,8 +778,8 @@ func ParsePkBin(f *os.File) (*types.Pk, error) {
 	if err != nil {
 		return nil, err
 	}
-	pk.VkDelta2 = new(bn256.G2)
-	_, err = pk.VkDelta2.Unmarshal(fromMont2Q(b))
+	pk.VkDelta2 = new(curve.G2Affine)
+	err = pk.VkDelta2.Unmarshal(fromMont2Q(b))
 	if err != nil {
 		return nil, err
 	}
@@ -852,8 +852,8 @@ func ParsePkBin(f *os.File) (*types.Pk, error) {
 		if err != nil {
 			return nil, err
 		}
-		p1 := new(bn256.G1)
-		_, err = p1.Unmarshal(fromMont1Q(b))
+		p1 := new(curve.G1Affine)
+		err = p1.Unmarshal(fromMont1Q(b))
 		if err != nil {
 			return nil, err
 		}
@@ -869,8 +869,8 @@ func ParsePkBin(f *os.File) (*types.Pk, error) {
 		if err != nil {
 			return nil, err
 		}
-		p1 := new(bn256.G1)
-		_, err = p1.Unmarshal(fromMont1Q(b))
+		p1 := new(curve.G1Affine)
+		err = p1.Unmarshal(fromMont1Q(b))
 		if err != nil {
 			return nil, err
 		}
@@ -886,8 +886,8 @@ func ParsePkBin(f *os.File) (*types.Pk, error) {
 		if err != nil {
 			return nil, err
 		}
-		p2 := new(bn256.G2)
-		_, err = p2.Unmarshal(fromMont2Q(b))
+		p2 := new(curve.G2Affine)
+		err = p2.Unmarshal(fromMont2Q(b))
 		if err != nil {
 			return nil, err
 		}
@@ -899,8 +899,8 @@ func ParsePkBin(f *os.File) (*types.Pk, error) {
 	}
 	// C
 	zb := make([]byte, 64)
-	z := new(bn256.G1)
-	_, err = z.Unmarshal(zb)
+	z := new(curve.G1Affine)
+	err = z.Unmarshal(zb)
 	if err != nil {
 		return nil, err
 	}
@@ -912,8 +912,8 @@ func ParsePkBin(f *os.File) (*types.Pk, error) {
 		if err != nil {
 			return nil, err
 		}
-		p1 := new(bn256.G1)
-		_, err = p1.Unmarshal(fromMont1Q(b))
+		p1 := new(curve.G1Affine)
+		err = p1.Unmarshal(fromMont1Q(b))
 		if err != nil {
 			return nil, err
 		}
@@ -929,8 +929,8 @@ func ParsePkBin(f *os.File) (*types.Pk, error) {
 		if err != nil {
 			return nil, err
 		}
-		p1 := new(bn256.G1)
-		_, err = p1.Unmarshal(fromMont1Q(b))
+		p1 := new(curve.G1Affine)
+		err = p1.Unmarshal(fromMont1Q(b))
 		if err != nil {
 			return nil, err
 		}
@@ -1223,8 +1223,8 @@ func ParsePkGoBin(f *os.File) (*types.Pk, error) {
 	if err != nil {
 		return nil, err
 	}
-	pk.VkAlpha1 = new(bn256.G1)
-	_, err = pk.VkAlpha1.Unmarshal(b)
+	pk.VkAlpha1 = new(curve.G1Affine)
+	err = pk.VkAlpha1.Unmarshal(b)
 	if err != nil {
 		return &pk, err
 	}
@@ -1232,8 +1232,8 @@ func ParsePkGoBin(f *os.File) (*types.Pk, error) {
 	if err != nil {
 		return nil, err
 	}
-	pk.VkBeta1 = new(bn256.G1)
-	_, err = pk.VkBeta1.Unmarshal(b)
+	pk.VkBeta1 = new(curve.G1Affine)
+	err = pk.VkBeta1.Unmarshal(b)
 	if err != nil {
 		return &pk, err
 	}
@@ -1241,8 +1241,8 @@ func ParsePkGoBin(f *os.File) (*types.Pk, error) {
 	if err != nil {
 		return nil, err
 	}
-	pk.VkDelta1 = new(bn256.G1)
-	_, err = pk.VkDelta1.Unmarshal(b)
+	pk.VkDelta1 = new(curve.G1Affine)
+	err = pk.VkDelta1.Unmarshal(b)
 	if err != nil {
 		return &pk, err
 	}
@@ -1250,8 +1250,8 @@ func ParsePkGoBin(f *os.File) (*types.Pk, error) {
 	if err != nil {
 		return nil, err
 	}
-	pk.VkBeta2 = new(bn256.G2)
-	_, err = pk.VkBeta2.Unmarshal(b)
+	pk.VkBeta2 = new(curve.G2Affine)
+	err = pk.VkBeta2.Unmarshal(b)
 	if err != nil {
 		return &pk, err
 	}
@@ -1259,8 +1259,8 @@ func ParsePkGoBin(f *os.File) (*types.Pk, error) {
 	if err != nil {
 		return nil, err
 	}
-	pk.VkDelta2 = new(bn256.G2)
-	_, err = pk.VkDelta2.Unmarshal(b)
+	pk.VkDelta2 = new(curve.G2Affine)
+	err = pk.VkDelta2.Unmarshal(b)
 	if err != nil {
 		return &pk, err
 	}
@@ -1333,8 +1333,8 @@ func ParsePkGoBin(f *os.File) (*types.Pk, error) {
 		if err != nil {
 			return nil, err
 		}
-		p1 := new(bn256.G1)
-		_, err = p1.Unmarshal(b)
+		p1 := new(curve.G1Affine)
+		err = p1.Unmarshal(b)
 		if err != nil {
 			return nil, err
 		}
@@ -1350,8 +1350,8 @@ func ParsePkGoBin(f *os.File) (*types.Pk, error) {
 		if err != nil {
 			return nil, err
 		}
-		p1 := new(bn256.G1)
-		_, err = p1.Unmarshal(b)
+		p1 := new(curve.G1Affine)
+		err = p1.Unmarshal(b)
 		if err != nil {
 			return nil, err
 		}
@@ -1367,8 +1367,8 @@ func ParsePkGoBin(f *os.File) (*types.Pk, error) {
 		if err != nil {
 			return nil, err
 		}
-		p2 := new(bn256.G2)
-		_, err = p2.Unmarshal(b)
+		p2 := new(curve.G2Affine)
+		err = p2.Unmarshal(b)
 		if err != nil {
 			return nil, err
 		}
@@ -1380,8 +1380,8 @@ func ParsePkGoBin(f *os.File) (*types.Pk, error) {
 	}
 	// C
 	zb := make([]byte, 64)
-	z := new(bn256.G1)
-	_, err = z.Unmarshal(zb)
+	z := new(curve.G1Affine)
+	err = z.Unmarshal(zb)
 	if err != nil {
 		return nil, err
 	}
@@ -1393,8 +1393,8 @@ func ParsePkGoBin(f *os.File) (*types.Pk, error) {
 		if err != nil {
 			return nil, err
 		}
-		p1 := new(bn256.G1)
-		_, err = p1.Unmarshal(b)
+		p1 := new(curve.G1Affine)
+		err = p1.Unmarshal(b)
 		if err != nil {
 			return nil, err
 		}
@@ -1410,8 +1410,8 @@ func ParsePkGoBin(f *os.File) (*types.Pk, error) {
 		if err != nil {
 			return nil, err
 		}
-		p1 := new(bn256.G1)
-		_, err = p1.Unmarshal(b)
+		p1 := new(curve.G1Affine)
+		err = p1.Unmarshal(b)
 		if err != nil {
 			return nil, err
 		}

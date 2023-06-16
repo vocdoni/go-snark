@@ -4,11 +4,13 @@ import (
 	"bytes"
 	"crypto/rand"
 	"fmt"
+	"io"
 	"math/big"
 	"testing"
 	"time"
 
-	bn256 "github.com/ethereum/go-ethereum/crypto/bn256/cloudflare"
+	"github.com/consensys/gnark-crypto/ecc/bn254"
+	curve "github.com/consensys/gnark-crypto/ecc/bn254"
 )
 
 const (
@@ -26,20 +28,39 @@ func randomBigIntArray(n int) []*big.Int {
 	return p
 }
 
-func randomG1Array(n int) []*bn256.G1 {
-	arrayG1 := make([]*bn256.G1, n)
+func randomG1(r io.Reader) *curve.G1Affine {
+	order := bn254.ID.ScalarField().Uint64()
+	k, err := rand.Int(r, new(big.Int).SetUint64(order))
+	if err != nil {
+		panic(err)
+	}
+	return new(curve.G1Affine).ScalarMultiplicationBase(k)
+}
 
+func randomG2(r io.Reader) *curve.G2Affine {
+	order := bn254.ID.ScalarField().Uint64()
+	k, err := rand.Int(r, new(big.Int).SetUint64(order))
+	if err != nil {
+		panic(err)
+	}
+	return new(curve.G2Affine).ScalarMultiplicationBase(k)
+}
+
+func randomG1Array(n int) []*curve.G1Affine {
+	arrayG1 := make([]*curve.G1Affine, n)
+
+	//new(curve.G1Affine).
 	for i := 0; i < n; i++ {
-		_, arrayG1[i], _ = bn256.RandomG1(rand.Reader)
+		arrayG1[i] = randomG1(rand.Reader)
 	}
 	return arrayG1
 }
 
-func randomG2Array(n int) []*bn256.G2 {
-	arrayG2 := make([]*bn256.G2, n)
+func randomG2Array(n int) []*curve.G2Affine {
+	arrayG2 := make([]*curve.G2Affine, n)
 
 	for i := 0; i < n; i++ {
-		_, arrayG2[i], _ = bn256.RandomG2(rand.Reader)
+		arrayG2[i] = randomG2(rand.Reader)
 	}
 	return arrayG2
 }
@@ -53,9 +74,9 @@ func TestTableG1(t *testing.T) {
 	var arrayG1 = randomG1Array(n)
 
 	beforeT := time.Now()
-	Q1 := new(bn256.G1).ScalarBaseMult(new(big.Int))
+	Q1 := new(curve.G1Affine).ScalarMultiplicationBase(new(big.Int))
 	for i := 0; i < n; i++ {
-		Q1.Add(Q1, new(bn256.G1).ScalarMult(arrayG1[i], arrayW[i]))
+		Q1.Add(Q1, new(curve.G1Affine).ScalarMultiplication(arrayG1[i], arrayW[i]))
 	}
 	fmt.Println("Std. Mult. time elapsed:", time.Since(beforeT))
 
@@ -69,7 +90,7 @@ func TestTableG1(t *testing.T) {
 		table[ntables-1].newTableG1(arrayG1[(ntables-1)*gsize:], gsize, true)
 
 		beforeT = time.Now()
-		Q2 := new(bn256.G1).ScalarBaseMult(new(big.Int))
+		Q2 := new(curve.G1Affine).ScalarMultiplicationBase(new(big.Int))
 		for i := 0; i < ntables-1; i++ {
 			Q2 = table[i].mulTableG1(arrayW[i*gsize:(i+1)*gsize], Q2, gsize)
 		}
@@ -113,9 +134,9 @@ func TestTableG2(t *testing.T) {
 	var arrayG2 = randomG2Array(n)
 
 	beforeT := time.Now()
-	Q1 := new(bn256.G2).ScalarBaseMult(new(big.Int))
+	Q1 := new(curve.G2Affine).ScalarMultiplicationBase(new(big.Int))
 	for i := 0; i < n; i++ {
-		Q1.Add(Q1, new(bn256.G2).ScalarMult(arrayG2[i], arrayW[i]))
+		Q1.Add(Q1, new(curve.G2Affine).ScalarMultiplication(arrayG2[i], arrayW[i]))
 	}
 	fmt.Println("Std. Mult. time elapsed:", time.Since(beforeT))
 
@@ -129,7 +150,7 @@ func TestTableG2(t *testing.T) {
 		table[ntables-1].newTableG2(arrayG2[(ntables-1)*gsize:], gsize, false)
 
 		beforeT = time.Now()
-		Q2 := new(bn256.G2).ScalarBaseMult(new(big.Int))
+		Q2 := new(curve.G2Affine).ScalarMultiplicationBase(new(big.Int))
 		for i := 0; i < ntables-1; i++ {
 			Q2 = table[i].mulTableG2(arrayW[i*gsize:(i+1)*gsize], Q2, gsize)
 		}

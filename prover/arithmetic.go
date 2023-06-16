@@ -4,7 +4,8 @@ import (
 	"bytes"
 	"math/big"
 
-	bn256 "github.com/ethereum/go-ethereum/crypto/bn256/cloudflare"
+	curve "github.com/consensys/gnark-crypto/ecc/bn254"
+
 	"github.com/iden3/go-iden3-crypto/ff"
 	"github.com/vocdoni/go-snark/types"
 )
@@ -25,18 +26,18 @@ func arrayOfZeroesE(n int) []*ff.Element {
 	return r[:]
 }
 
-func arrayOfZeroesG1(n int) []*bn256.G1 {
-	r := make([]*bn256.G1, n)
+func arrayOfZeroesG1(n int) []*curve.G1Affine {
+	r := make([]*curve.G1Affine, n)
 	for i := 0; i < n; i++ {
-		r[i] = new(bn256.G1).ScalarBaseMult(big.NewInt(0))
+		r[i] = new(curve.G1Affine).ScalarMultiplicationBase(big.NewInt(0))
 	}
 	return r[:]
 }
 
-func arrayOfZeroesG2(n int) []*bn256.G2 {
-	r := make([]*bn256.G2, n)
+func arrayOfZeroesG2(n int) []*curve.G2Affine {
+	r := make([]*curve.G2Affine, n)
 	for i := 0; i < n; i++ {
-		r[i] = new(bn256.G2).ScalarBaseMult(big.NewInt(0))
+		r[i] = new(curve.G2Affine).ScalarMultiplicationBase(big.NewInt(0))
 	}
 	return r[:]
 }

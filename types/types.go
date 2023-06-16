@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"math/big"
 
-	bn256 "github.com/ethereum/go-ethereum/crypto/bn256/cloudflare"
+	curve "github.com/consensys/gnark-crypto/ecc/bn254"
 )
 
 // Q is the order of the integer field (Zq) that fits inside the snark
@@ -18,9 +18,9 @@ var R, _ = new(big.Int).SetString(
 
 // Proof is the data structure of the Groth16 zkSNARK proof
 type Proof struct {
-	A *bn256.G1
-	B *bn256.G2
-	C *bn256.G1
+	A *curve.G1Affine
+	B *curve.G2Affine
+	C *curve.G1Affine
 }
 
 type proofAux struct {
@@ -48,24 +48,24 @@ func (p *Proof) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	p.A = new(bn256.G1)
-	if _, err := p.A.Unmarshal(aBytes); err != nil {
+	p.A = new(curve.G1Affine)
+	if err := p.A.Unmarshal(aBytes); err != nil {
 		return err
 	}
 	bBytes, err := hex.DecodeString(pa.B)
 	if err != nil {
 		return err
 	}
-	p.B = new(bn256.G2)
-	if _, err := p.B.Unmarshal(bBytes); err != nil {
+	p.B = new(curve.G2Affine)
+	if err := p.B.Unmarshal(bBytes); err != nil {
 		return err
 	}
 	cBytes, err := hex.DecodeString(pa.C)
 	if err != nil {
 		return err
 	}
-	p.C = new(bn256.G1)
-	if _, err := p.C.Unmarshal(cBytes); err != nil {
+	p.C = new(curve.G1Affine)
+	if err := p.C.Unmarshal(cBytes); err != nil {
 		return err
 	}
 	return nil
@@ -73,18 +73,18 @@ func (p *Proof) UnmarshalJSON(data []byte) error {
 
 // Pk holds the data structure of the ProvingKey
 type Pk struct {
-	A          []*bn256.G1
-	B2         []*bn256.G2
-	B1         []*bn256.G1
-	C          []*bn256.G1
+	A          []*curve.G1Affine
+	B2         []*curve.G2Affine
+	B1         []*curve.G1Affine
+	C          []*curve.G1Affine
 	NVars      int
 	NPublic    int
-	VkAlpha1   *bn256.G1
-	VkDelta1   *bn256.G1
-	VkBeta1    *bn256.G1
-	VkBeta2    *bn256.G2
-	VkDelta2   *bn256.G2
-	HExps      []*bn256.G1
+	VkAlpha1   *curve.G1Affine
+	VkDelta1   *curve.G1Affine
+	VkBeta1    *curve.G1Affine
+	VkBeta2    *curve.G2Affine
+	VkDelta2   *curve.G2Affine
+	HExps      []*curve.G1Affine
 	DomainSize int
 	PolsA      []map[int]*big.Int
 	PolsB      []map[int]*big.Int
@@ -95,9 +95,9 @@ type Witness []*big.Int
 
 // Vk is the Verification Key data structure
 type Vk struct {
-	Alpha *bn256.G1
-	Beta  *bn256.G2
-	Gamma *bn256.G2
-	Delta *bn256.G2
-	IC    []*bn256.G1
+	Alpha *curve.G1Affine
+	Beta  *curve.G2Affine
+	Gamma *curve.G2Affine
+	Delta *curve.G2Affine
+	IC    []*curve.G1Affine
 }
